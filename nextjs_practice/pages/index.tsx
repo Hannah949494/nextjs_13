@@ -2,10 +2,16 @@ import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
+import { GetStaticProps } from "next";
+import { getSortedPostsData } from "@/lib/post";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function Home() {
+export default function Home({
+  allPostData,
+}: {
+  allPostData: { date: string; title: string; id: string }[];
+}) {
   return (
     <>
       <Head>
@@ -23,10 +29,25 @@ export default function Home() {
         <section>
           <h2>Blog</h2>
           <ul>
-            <li>test</li>
+            {allPostData.map(({ id, date, title }) => (
+              <li key={id}>
+                <a href={`/posts/${id}`}>{title}</a>
+                <br />
+                {date}
+              </li>
+            ))}
           </ul>
         </section>
       </main>
     </>
   );
 }
+
+export const getStaticProps: GetStaticProps = async () => {
+  const allPostData = getSortedPostsData();
+  return {
+    props: {
+      allPostData,
+    },
+  };
+};
